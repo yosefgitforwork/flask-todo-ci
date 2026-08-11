@@ -54,6 +54,9 @@ jobs:
       - name: Run Pytest
         env:
           PYTHONPATH: backend
-          SQLALCHEMY_DATABASE_URI: sqlite:///:memory:
           DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_NAME: todo_db
+          DB_USER: todo_user
+          DB_PASSWORD: todo_password
         run: python -m pytest test_server.py

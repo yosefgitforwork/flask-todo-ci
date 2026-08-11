@@ -10,28 +10,47 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_DATABASE: todo_db
+          MYSQL_USER: todo_user
+          MYSQL_PASSWORD: todo_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Create .env files for CI
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
         run: |
-          cp backend/.env.example backend/.env
-          cp backend/.env.example .env
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
 
-      - name: Start MySQL First
-        run: docker compose up -d todo-mysql
-
-      - name: Wait for MySQL to boot
-        run: sleep 20
-
-      - name: Build and Start All Services
-        run: docker compose up -d --build --no-deps backend frontend
-
-      - name: Run Tests inside Backend Container
+      - name: Create .env file
         run: |
-          docker compose exec -T backend pytest
+          cat << EOF > backend/.env
+          DB_HOST=127.0.0.1
+          DB_PORT=3306
+          DB_NAME=todo_db
+          DB_USER=todo_user
+          DB_PASSWORD=todo_password
+          EOF
 
-      - name: Shut down Docker services
-        if: always()
-        run: docker compose down
+      - name: Run Pytest
+        env:
+          PYTHONPATH: backend
+        run: pytest backend

@@ -20,13 +20,13 @@ jobs:
           cp backend/.env.example .env
 
       - name: Start MySQL First
-        run: docker compose up -d db
+        run: docker compose --env-file backend/.env up -d todo-mysql
 
       - name: Wait for MySQL to boot
         run: sleep 20
 
       - name: Build and Start All Services
-        run: docker compose up -d --build
+        run: docker compose --env-file backend/.env up -d --build
 
       - name: Run Tests inside Backend Container
         run: |

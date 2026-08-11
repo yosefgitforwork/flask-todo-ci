@@ -18,7 +18,7 @@ jobs:
         run: cp backend/.env.example backend/.env
 
       - name: Build and Start Docker Services
-        run: docker compose up -d --build
+        run: docker compose up -d --build --wait
 
       - name: Run Tests inside Backend Container
         run: |

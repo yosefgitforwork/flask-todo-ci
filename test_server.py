@@ -1,12 +1,13 @@
 import pytest
 from backend.app import create_app
 
-
 @pytest.fixture
 def client():
-    # יצירת מופע של האפליקציה במוד testing
     app = create_app("dev")
     app.config['TESTING'] = True
+    
+    # עוקף את הדרישה ל-MySQL ומשתמש במסד נתונים מהיר בזיכרון בזמן הבדיקות
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
     
     with app.test_client() as client:
         yield client

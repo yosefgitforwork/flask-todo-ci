@@ -1,4 +1,7 @@
-# Todo App — Flask API + React Client + Docker
+![Run Tests](https://github.com/yosefgitforwork/flask-todo-ci/actions/workflows/tests.yml/badge.svg)
+
+# Todo App – Flask API + React Client + Docker
+
 
 A small but production-shaped todo application, built as a teaching artifact for
 a software-engineering / DevOps course. The emphasis is on **clean architecture,
@@ -45,7 +48,6 @@ Both proxies (Vite in dev, nginx in prod) forward `/api` to the backend on the
 same origin, so **the browser never deals with CORS**. Flask-Cors is still wired
 up in the factory for flexibility (e.g. calling the API from a different host).
 
-```
 todo-app/
 ├── docker-compose.yml          # mysql + backend + frontend (+ test profile)
 ├── README.md
@@ -331,5 +333,6 @@ Two distinct causes:
   on the backend port.
 
 
-  ## CI/CD Pipeline
-בחרנו להריץ את ה-Tests בעזרת Docker Compose בתוך ה-Runner, מכיוון שהפרויקט עושה שימוש במגוון שירותים (Flask, MySQL, Frontend). הרצת `docker compose up` מבטיחה שהטסטים ירוצו בסביבה המבודדת והאמיתית של האפליקציה.
+
+## CI/CD Pipeline
+We chose to use the MySQL Service Container provided directly by GitHub Actions. This provides a clean, isolated, and fast MySQL instance for our test runner without needing to boot up the entire Docker Compose setup during CI runs.

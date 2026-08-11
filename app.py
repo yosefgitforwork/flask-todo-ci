@@ -19,7 +19,8 @@ class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100))
     complete = db.Column(db.Boolean)
-
+    priority = db.Column(db.String(20), nullable=True, default='medium')
+    
 # create the DB on demand
 @app.before_first_request
 def create_tables():
@@ -27,7 +28,6 @@ def create_tables():
 
 @app.route('/', methods=["GET"])
 def index():
-    print("index")
     t = Todo.query.all()
     return render_template("index.html", list_todo=t)
 

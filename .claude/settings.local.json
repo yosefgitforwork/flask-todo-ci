@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git fetch:*)",
+      "Bash(git reset:*)",
+      "Bash(zsh -lic 'echo \"PATH=$PATH\"; echo \"---\"; which docker-credential-desktop; echo \"exit=$?\"')"
+    ]
+  }
+}

@@ -1,0 +1,9 @@
+Single-database configuration for Flask (managed by Flask-Migrate / Alembic).
+
+Common commands (run inside the backend container, or locally with
+FLASK_APP=wsgi.py set):
+
+    flask db upgrade            # apply migrations (creates the todo table on a fresh DB)
+    flask db migrate -m "msg"   # autogenerate a new migration from model changes
+    flask db stamp head         # mark the DB as up-to-date WITHOUT running migrations
+                                # (use this on the pre-existing database so no data is touched)

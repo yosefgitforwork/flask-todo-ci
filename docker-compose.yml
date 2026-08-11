@@ -1,64 +1,72 @@
+# Three fully separate services that talk only over the compose network.
+#
+#   frontend (nginx) --HTTP--> backend (gunicorn/Flask) --SQL--> mysql
+#        :8080                        :5000                       :3306
+#
+# First run only: create/adopt the schema with Flask-Migrate — see the README's
+# "Database migrations" section (`docker compose exec backend flask db upgrade`
+# on a fresh DB, or `flask db stamp head` on the existing one).
+
 services:
-  app:
-    image: flask_app:latest
-    container_name: flask_app
+  mysql:
+    image: mysql:8.0
+    container_name: todo-mysql
     restart: unless-stopped
-    build:
-      context: .
-      dockerfile: server.Dockerfile
     environment:
-      # set database credentials
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: flask     # keep the EXISTING database name — no rename
+      MYSQL_USER: flask
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      # Reuse the existing named volume so current data is preserved.
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      # משתמשים ב-MYSQL_ROOT_PASSWORD משתנה הסביבה ולא בסיסמה קשיחה
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  backend:
+    build: ./backend
+    container_name: todo-backend
+    restart: unless-stopped
+    environment:
+      FLASK_CONFIG: ${FLASK_CONFIG}
+      FLASK_APP: wsgi.py         # lets `flask db ...` find the app in this container
       DB_HOST: mysql
       DB_NAME: flask
       DB_USER: flask
-      DB_PASSWORD: password
-
-    links:
-      # network connection with these services
-      - mysql
+      DB_PASSWORD: ${DB_PASSWORD}
     depends_on:
-      # build those images first
-      - mysql
+      mysql:
+        condition: service_healthy
     ports:
-      # bind on our 5000 port because most people have 80, 8080 already bound
       - "5001:5000"
 
-  mysql:
-    container_name: mysql
-    # let's grab from mysql 5.7 image
-    image: mysql
-    volumes:
-        # pass volume named mysql-data to mysql container
-      - mysql-data:/var/lib/mysql
-      - ./db/mysqld.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
+  frontend:
+    build: ./frontend
+    container_name: todo-frontend
     restart: unless-stopped
-    ports:
-      - "3306:3306"
-      # credentials
-    environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: flask
-      MYSQL_USER: flask
-      MYSQL_PASSWORD: password
-
-  test:
-    image: flask_test:latest
-    container_name: flask_test
-    restart: unless-stopped
-    build:
-      context: .
-      dockerfile: test.Dockerfile
-    links:
-      # network connection with these services
-      - app
     depends_on:
-      # build those images first
-      - app
+      - backend
+    ports:
+      - "8080:80"
 
-# volumes definition here
+  # Optional integration smoke test (used by CI). Runs only with the "test"
+  # profile or via `docker compose run --rm testserver`, so a normal
+  # `docker compose up` does not start it.
+  testserver:
+    build: ./tests
+    container_name: todo-testserver
+    depends_on:
+      - backend
+    profiles:
+      - test
+
 volumes:
-  # just a persistance data
   mysql-data:
     driver: local
-
-

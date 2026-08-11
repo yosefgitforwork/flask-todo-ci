@@ -1,0 +1,28 @@
+name: CI Pipeline
+on:
+  push:
+
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build and start services
+        run: docker compose up -d --build
+
+      - name: Apply database migrations
+        # Fresh CI database: create the schema via Flask-Migrate (no create_all).
+        run: docker compose exec -T backend flask db upgrade
+
+      - name: Show running containers
+        run: docker ps
+
+      - name: Run integration smoke test (inside the docker network)
+        run: docker compose run --rm testserver
+
+      - name: Shut down containers
+        if: always()
+        run: docker compose down

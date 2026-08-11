@@ -1,6 +1,4 @@
 FROM python
-RUN python -m pip install --upgrade pip
-WORKDIR /app
-COPY ./testserver.py .
-RUN pip install requests
+WORKDIR /tests
+COPY testserver .
 CMD ["python", "testserver.py"]

@@ -1,26 +1,12 @@
-import requests
-import time
-import sys
+import pytest
+from app import app  # ודא שזה שם ה-app אצלך (או מ-app.py/backend)
 
-BASE_URL = "http://web:5000"  # שם ה-service בדוקר
-URL = f"{BASE_URL}/add"
+@pytest.fixture
+def client():
+    app.config['TESTING'] = True
+    with app.test_client() as client:
+        yield client
 
-data = {
-    "title": "Buy groceries"
-}
-
-
-if __name__ == "__main__":
-    try:
-        response = requests.post(URL, json=data)
-
-        if response.status_code == 200:
-            print("TEST PASSED:", response.json())
-            sys.exit(0)
-        else:
-            print("TEST FAILED: bad status code", response.status_code)
-            sys.exit(1)
-
-    except Exception as e:
-        print("TEST FAILED:", str(e))
-        sys.exit(1)
+def test_add_todo(client):
+    response = client.post('/add', json={"title": "Buy groceries"})
+    assert response.status_code in [200, 201]

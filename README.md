@@ -329,3 +329,7 @@ Two distinct causes:
   the root index route was added; `/` now returns a small JSON pointer to the
   API. Either way, remember the **real UI lives at `http://localhost:8080`**, not
   on the backend port.
+
+
+  ## CI/CD Pipeline
+בחרנו להריץ את ה-Tests בעזרת Docker Compose בתוך ה-Runner, מכיוון שהפרויקט עושה שימוש במגוון שירותים (Flask, MySQL, Frontend). הרצת `docker compose up` מבטיחה שהטסטים ירוצו בסביבה המבודדת והאמיתית של האפליקציה.

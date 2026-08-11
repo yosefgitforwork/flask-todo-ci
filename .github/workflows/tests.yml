@@ -54,4 +54,6 @@ jobs:
       - name: Run Pytest
         env:
           PYTHONPATH: backend
+          SQLALCHEMY_DATABASE_URI: sqlite:///:memory:
+          DB_HOST: 127.0.0.1
         run: python -m pytest test_server.py

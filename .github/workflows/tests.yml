@@ -51,9 +51,7 @@ jobs:
           DB_PASSWORD=todo_password
           EOF
 
-
-
-        - name: Run Pytest
+      - name: Run Pytest
         env:
           PYTHONPATH: backend
         run: python -m pytest test_server.py

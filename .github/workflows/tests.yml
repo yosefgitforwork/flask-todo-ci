@@ -14,16 +14,19 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Create .env file for CI
+      - name: Create .env files for CI
         run: |
           cp backend/.env.example backend/.env
           cp backend/.env.example .env
 
-      - name: Build and Start Docker Services
-        run: docker compose up -d --build
+      - name: Start MySQL First
+        run: docker compose up -d todo-mysql
 
-      - name: Wait for services to start
-        run: sleep 15
+      - name: Wait for MySQL to boot
+        run: sleep 20
+
+      - name: Build and Start All Services
+        run: docker compose up -d --build --no-deps backend frontend
 
       - name: Run Tests inside Backend Container
         run: |

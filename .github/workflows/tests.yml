@@ -30,10 +30,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
+          python -m pip install --upgrade pip setuptools
           if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          pip install "Flask-SQLAlchemy<3.0.0" pytest pytest-flask pymysql
+          pip install --upgrade "Flask>=2.3.0" "Werkzeug>=2.3.0" "Jinja2>=3.1.0" "Flask-SQLAlchemy>=3.0.0" pytest pytest-flask pymysql
 
       - name: Run Pytest
         env:

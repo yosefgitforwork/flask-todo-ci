@@ -15,7 +15,7 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: rootpassword
-          MYSQL_DATABASE: flask_test
+          MYSQL_DATABASE: flask
           MYSQL_USER: test_user
           MYSQL_PASSWORD: test_password
         ports:
@@ -44,8 +44,8 @@ jobs:
           echo "DB_PORT=3306" >> .env
           echo "DB_USER=test_user" >> .env
           echo "DB_PASSWORD=test_password" >> .env
-          echo "DB_NAME=flask_test" >> .env
-          echo "DATABASE_URL=mysql+pymysql://test_user:test_password@127.0.0.1:3306/flask_test" >> .env
+          echo "DB_NAME=flask" >> .env
+          echo "DATABASE_URL=mysql+pymysql://test_user:test_password@127.0.0.1:3306/flask" >> .env
           cp .env backend/.env || true
 
       - name: Run Pytest
@@ -55,7 +55,8 @@ jobs:
           MYSQL_HOST: 127.0.0.1
           DB_USER: test_user
           DB_PASSWORD: test_password
-          DATABASE_URL: mysql+pymysql://test_user:test_password@127.0.0.1:3306/flask_test
+          DB_NAME: flask
+          DATABASE_URL: mysql+pymysql://test_user:test_password@127.0.0.1:3306/flask
         run: |
           pytest test_server.py
 

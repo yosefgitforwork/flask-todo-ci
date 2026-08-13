@@ -30,17 +30,17 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd backend
           python -m pip install --upgrade pip
-          pip install pytest pytest-flask
+          pip install pytest pytest-flask pymysql
+          if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Run Pytest
         env:
+          PYTHONPATH: .
           DATABASE_URL: mysql+pymysql://root:rootpassword@127.0.0.1:3306/flask_test
         run: |
-          cd backend
-          pytest
+          pytest test_server.py
 
   # 2. בנייה ודחיפה ל-Docker Hub (רץ רק אם ה-tests הצליחו!)
   build-and-push:

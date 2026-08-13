@@ -35,14 +35,22 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install --upgrade "Flask>=2.3.0" "Werkzeug>=2.3.0" "Jinja2>=3.1.0" "Flask-SQLAlchemy>=3.0.0" pytest pytest-flask pymysql
 
+      - name: Create temporary .env for CI
+        run: |
+          echo "DB_HOST=127.0.0.1" > .env
+          echo "MYSQL_HOST=127.0.0.1" >> .env
+          echo "DB_PORT=3306" >> .env
+          echo "DB_USER=root" >> .env
+          echo "DB_PASSWORD=rootpassword" >> .env
+          echo "DB_NAME=flask_test" >> .env
+          echo "DATABASE_URL=mysql+pymysql://root:rootpassword@127.0.0.1:3306/flask_test" >> .env
+          cp .env backend/.env || true
+
       - name: Run Pytest
         env:
           PYTHONPATH: .
+          DB_HOST: 127.0.0.1
           MYSQL_HOST: 127.0.0.1
-          MYSQL_PORT: 3306
-          MYSQL_USER: root
-          MYSQL_PASSWORD: rootpassword
-          MYSQL_DB: flask_test
           DATABASE_URL: mysql+pymysql://root:rootpassword@127.0.0.1:3306/flask_test
         run: |
           pytest test_server.py

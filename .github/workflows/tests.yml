@@ -33,7 +33,7 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          pip install pytest pytest-flask pymysql Werkzeug==2.2.2 Flask==2.2.2
+          pip install "Flask-SQLAlchemy<3.0.0" pytest pytest-flask pymysql
 
       - name: Run Pytest
         env:
